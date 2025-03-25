@@ -1,0 +1,50 @@
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui;
+    color: #ffffff;
+    background-color: #1e1c1c;
+    padding-inline: 2.5em;
+}
+
+h1 {
+    font-size: 3rem;
+    border-bottom: solid 2.5px #ffffff;
+    width: fit-content;
+    padding-bottom: 0.25em;
+}
+
+a {
+    color: #2e74fb;
+}
+
+.create-url-wrapper {
+    margin-top: 3rem;
+}
+
+input[type="text"] {
+    min-width: 300px;
+    font-size: 1.1rem;
+    padding: 0.3em 0.5em;
+    border-radius: 10px;
+    border: transparent;
+}
+
+input[type="submit"] {
+    font-size: 1.1rem;
+    padding: 0.3em 0.5em;
+    border-radius: 10px;
+    border: transparent;
+    color: #ffffff;
+    background-color: #2e74fb;
+    cursor: pointer;
+}
