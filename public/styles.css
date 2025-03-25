@@ -3,6 +3,10 @@
 *::before {
     box-sizing: border-box;
 }
+
+:root {
+    --green: #1aff89;
+}
 html,
 body {
     margin: 0;
@@ -24,11 +28,12 @@ h1 {
 }
 
 a {
-    color: #2e74fb;
+    color: var(--green);
 }
 
-.create-url-wrapper {
+.action-wrapper {
     margin-top: 3rem;
+    margin-bottom: 3rem;
 }
 
 input[type="text"] {
@@ -41,10 +46,11 @@ input[type="text"] {
 
 input[type="submit"] {
     font-size: 1.1rem;
+    font-weight: 500;
     padding: 0.3em 0.5em;
     border-radius: 10px;
     border: transparent;
-    color: #ffffff;
-    background-color: #2e74fb;
+    color: #000000;
+    background-color: var(--green);
     cursor: pointer;
 }

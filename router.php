@@ -2,8 +2,10 @@
 
 $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
 $routes = [
-    "/" => "controllers/index.php",
+    "/" => "views/index.html",
     "/shorten" => "controllers/shorten.php",
+    "/400" => "views/error-codes/400.php",
+    "/404" => "views/error-codes/400.php",
 ];
 
 function routeToController($uri, $routes)

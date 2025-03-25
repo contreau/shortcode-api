@@ -1,5 +1,6 @@
 <?php
-$config = require "config.php";
+require "database/functions.php";
+$config = require "database/config.php";
 $db = new Database(
     $config["database"],
     $config["credentials"]["username"],
@@ -13,15 +14,8 @@ function POST_shortcode($db)
     $shortcode = generateShortcode();
 
     // check for existing record
-    $existingRecord = $db
-        ->query(
-            "select exists(select 1 from url_information where url = :url) as record_exists",
-            [":url" => $long_url]
-        )
-        ->fetchAll();
-
-    if (count($existingRecord) == 1) {
-        sendStatusCode(400);
+    if (recordExists($db, "url", $long_url)) {
+        sendErrorCode(400);
         return [null, null];
     } else {
         // create record in database
@@ -36,9 +30,29 @@ function POST_shortcode($db)
     }
 }
 
-function GET_longurl()
+function GET_longurl($db)
 {
-    $path = parse_url($_SERVER["REQUEST_URI"]["path"]);
+    $shortcode = $_GET["shortcode"];
+    // query for record in database
+    if (recordExists($db, "shortcode", $shortcode)) {
+        $db_response = $db
+            ->query(
+                "select url as long_url from url_information where shortcode = :shortcode",
+                [
+                    ":shortcode" => $shortcode,
+                ]
+            )
+            ->fetch();
+        // update accessCount in database
+        $db->query(
+            "update url_information set accessCount = accessCount + 1 where shortcode = :shortcode",
+            [":shortcode" => $shortcode]
+        );
+        return $db_response["long_url"];
+    } else {
+        sendErrorCode(404);
+        return null;
+    }
 }
 
 // ** Configure actions
@@ -46,11 +60,16 @@ function GET_longurl()
 $method = $_SERVER["REQUEST_METHOD"];
 switch ($method) {
     case "GET":
-        GET_longurl();
+        $long_url = GET_longurl($db);
+        if ($long_url != null) {
+            http_response_code(200);
+            require "views/shorten.view.php";
+        }
         break;
     case "POST":
         [$long_url, $shortcode] = POST_shortcode($db);
         if ($shortcode != null) {
+            http_response_code(201);
             require "views/shorten.view.php";
         }
         break;

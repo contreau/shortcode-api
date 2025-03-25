@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>URL Shortener</title>
+        <link rel="stylesheet" type="text/css" href="public/styles.css" />
+        <script defer src="public/app.js"></script>
+    </head>
+    <body>
+        <h1>URL Shortener</h1>
+
+        <section class="create-url-wrapper action-wrapper">
+            <h2>Create a Short URL</h2>
+            <form method="post" action="/shorten">
+                <input
+                    type="text"
+                    name="long_url"
+                    placeholder="Enter a long URL"
+                />
+                <input type="submit" value="Submit" />
+            </form>
+        </section>
+
+        <section class="action-wrapper">
+            <h2>Retrieve a Full URL</h2>
+            <p>
+                In your browser's address bar, append your shortcode to the the
+                domain:
+                <strong
+                    ><span style="color: #1aff89"
+                        >localhost:8000/your-shortcode</span
+                    ></strong
+                >
+            </p>
+        </section>
+
+        <section class="action-wrapper">
+            <h2>Update a Short URL</h2>
+        </section>
+
+        <section class="action-wrapper">
+            <h2>Delete a Short URL</h2>
+        </section>
+
+        <section class="action-wrapper">
+            <h2>Get Statistics for a Short URL</h2>
+        </section>
+
+        <!-- <section class="get-url-wrapper action-wrapper">
+                    <h2>Retrieve Full URL</h2>
+                    <form method="get" action="/shorten">
+                        <input type="text" name="shortcode" placeholder="Enter Shortcode">
+                        <input type="submit" value="Retrieve Long URL">
+                    </form>
+                </section> -->
+    </body>
+</html>

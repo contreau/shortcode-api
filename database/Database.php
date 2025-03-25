@@ -1,6 +1,5 @@
 <?php
 
-// connect to MySQL database and execute a query
 class Database
 {
     public $connection;
