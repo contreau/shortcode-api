@@ -7,6 +7,7 @@
 :root {
     --green: #1aff89;
 }
+
 html,
 body {
     margin: 0;
@@ -79,4 +80,17 @@ input[type="submit"] {
 
 .hide {
     display: none;
+}
+
+.invalid-url-message {
+    opacity: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #fa5959;
+    transition: opacity 0.2s;
+    padding-left: 0.25em;
+}
+
+.visible {
+    opacity: 1;
 }
