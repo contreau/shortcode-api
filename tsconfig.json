@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    // Set up type checking to use "expected" ES modules and native resolution
+    "target": "es2020",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+
+    // Instruct typescript language server to look inside js files and
+    // check them.
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "noEmit": true,
+
+    // Instruct non-relative imports to start within the `src` directory
+    "baseUrl": "public",
+
+    // Allow modules to `export default`
+    "esModuleInterop": true
+  },
+  "include": ["public/*.js"]
+}
