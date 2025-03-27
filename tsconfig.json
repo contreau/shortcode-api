@@ -18,5 +18,5 @@
     // Allow modules to `export default`
     "esModuleInterop": true
   },
-  "include": ["public/*.js"]
+  "include": ["public/js/*.js", "public/js/actions.js", "public/js/app.js"]
 }
