@@ -1,5 +1,7 @@
 "use strict";
 
+import { postURL } from "./actions.js";
+
 // ** Handler for toggling '.selected' of action buttons and their associated <section> display
 const actionButtons = document.querySelectorAll(".action-items button");
 actionButtons.forEach((btn) => {
@@ -30,14 +32,28 @@ function isValidURL(url) {
   }
 }
 
+// ** MESSAGE INDICATING INVALID URL
+/** @type {HTMLParagraphElement | null} */
+const invalidUrlMessage = document.querySelector("p.invalid-url-message");
+
+// ** FORM FOR SHORTCODE CREATION
+/** @type {HTMLFormElement | null} */
+const createShortcodeForm = document.querySelector('form[method="post"]');
+createShortcodeForm?.addEventListener("submit", (event) => {
+  event?.preventDefault();
+  const input = /** @type {HTMLInputElement} */ (
+    createShortcodeForm.elements[0]
+  );
+  postURL("/shorten", input.value);
+  input.value = "";
+  input.focus();
+});
+
+// ** SUBMIT BUTTON FOR SHORTCODE CREATION
 /** @type {HTMLButtonElement | null} */
 const createShortcodeSubmitButton = document.querySelector(
   'form[method="post"] input[type="submit"]',
 );
-
-/** @type {HTMLParagraphElement | null} */
-const invalidUrlMessage = document.querySelector("p.invalid-url-message");
-
 createShortcodeSubmitButton?.addEventListener("click", (event) => {
   const submitButton = /** @type {HTMLInputElement} */ (event.target);
   const urlInput = /** @type {HTMLInputElement} */ (

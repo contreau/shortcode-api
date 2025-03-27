@@ -70,7 +70,8 @@ switch ($method) {
         [$long_url, $shortcode] = POST_shortcode($db);
         if ($shortcode != null) {
             http_response_code(201);
-            require "views/shorten.view.php";
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode([$long_url, $shortcode]);
         }
         break;
 }
