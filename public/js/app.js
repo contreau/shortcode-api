@@ -1,6 +1,6 @@
 "use strict";
 
-import { postURL } from "./actions.js";
+import * as POST from "./actions/post.js";
 
 // ** Handler for toggling '.selected' of action buttons and their associated <section> display
 const actionButtons = document.querySelectorAll(".action-items button");
@@ -36,25 +36,42 @@ function isValidURL(url) {
 /** @type {HTMLParagraphElement | null} */
 const invalidUrlMessage = document.querySelector("p.invalid-url-message");
 
-// ** FORM FOR SHORTCODE CREATION
-/** @type {HTMLFormElement | null} */
-const createShortcodeForm = document.querySelector('form[method="post"]');
-createShortcodeForm?.addEventListener("submit", (event) => {
+// ** CSS CLASS MAP FOR STATUS CODES
+/** @type {Map<number, string>}  */
+const statusCssClass = new Map([
+  [200, "success"],
+  [201, "success"],
+  [204, "success"],
+  [400, "error"],
+  [404, "error"],
+]);
+
+// ** POST ACTION EVENT LISTENERS
+// * FORM INPUT
+POST.shortcodeForm?.addEventListener("submit", async (event) => {
   event?.preventDefault();
   const input = /** @type {HTMLInputElement} */ (
-    createShortcodeForm.elements[0]
+    POST.shortcodeForm?.elements[0]
   );
-  postURL("/shorten", input.value);
+  const [data, status] = await POST.postURL("/shorten", input.value);
+  console.log(data);
+  for (let i = 0; i < Object.keys(data).length; i++) {
+    POST.responseItemSpans[i].textContent = /** @type {string} */ (
+      data[`${POST.responseItemSpans[i].id}`]
+    );
+  }
+  // add status code color and add response code as text
+  POST.statusCodeSpan?.classList.add(
+    /** @type {string} */ (statusCssClass.get(status)),
+  );
+  POST.statusCodeSpan.textContent = `${status}`;
+  // make response visible
+  POST.responseContainer.classList.add("visible");
   input.value = "";
   input.focus();
 });
-
-// ** SUBMIT BUTTON FOR SHORTCODE CREATION
-/** @type {HTMLButtonElement | null} */
-const createShortcodeSubmitButton = document.querySelector(
-  'form[method="post"] input[type="submit"]',
-);
-createShortcodeSubmitButton?.addEventListener("click", (event) => {
+// * SUBMIT BUTTON
+POST.shortcodeSubmitButton?.addEventListener("click", (event) => {
   const submitButton = /** @type {HTMLInputElement} */ (event.target);
   const urlInput = /** @type {HTMLInputElement} */ (
     submitButton?.form?.elements[0]
