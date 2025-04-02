@@ -24,7 +24,6 @@
         <link rel="manifest" href="public/favicon/site.webmanifest" />
         <link rel="stylesheet" type="text/css" href="public/css/styles.css" />
         <script defer type="module" src="public/js/app.js"></script>
-        <script defer type="module" src="public/js/actions.js"></script>
     </head>
     <body>
         <h1>URL Shortener API Client</h1>
@@ -38,7 +37,7 @@
         </div>
 
         <section class="create action-wrapper">
-            <h2>Create a Short URL</h2>
+            <h2>Create a Shortcode</h2>
             <form method="post">
                 <input
                     type="text"
@@ -48,6 +47,28 @@
                 <input type="submit" value="Submit" />
             </form>
             <p class="invalid-url-message">Invalid URL.</p>
+
+            <div class="response-contents">
+                <code>
+                    <p>Status: <span class="status-code"></span></p>
+                    { <br />
+                    &nbsp;&nbsp;id: <span class="response-item" id="id"></span>
+                    <br />
+                    &nbsp;&nbsp;url:
+                    <span class="response-item" id="url"></span>
+                    <br />
+                    &nbsp;&nbsp;shortcode:
+                    <span class="response-item" id="shortcode"></span>
+                    <br />
+                    &nbsp;&nbsp;createdAt:
+                    <span class="response-item" id="createdAt"></span>
+                    <br />
+                    &nbsp;&nbsp;updatedAt:
+                    <span class="response-item" id="updatedAt"></span>
+                    <br />
+                    }
+                </code>
+            </div>
         </section>
 
         <section class="retrieve action-wrapper hide">
@@ -64,15 +85,15 @@
         </section>
 
         <section class="update action-wrapper hide">
-            <h2>Update a Short URL</h2>
+            <h2>Update a Shortcode</h2>
         </section>
 
         <section class="delete action-wrapper hide">
-            <h2>Delete a Short URL</h2>
+            <h2>Delete a Shortcode</h2>
         </section>
 
         <section class="stats action-wrapper hide">
-            <h2>Get Statistics for a Short URL</h2>
+            <h2>Get Statistics for a Shortcode</h2>
         </section>
 
         <!-- <section class="get-url-wrapper action-wrapper">
