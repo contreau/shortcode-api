@@ -7,18 +7,16 @@ const props = defineProps<{
     method: string;
     placeholder: string;
 }>();
-const invalidUrlErrorVisible = ref(false);
-
-function isValidURL(url: string): boolean {
-    try {
-        new URL(url);
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
 
 function validateInput(event: Event, url: string) {
+    const isValidURL = (url: string) => {
+        try {
+            new URL(url);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    };
     if (!isValidURL(url)) {
         event.preventDefault();
         invalidUrlErrorVisible.value = true;
@@ -26,10 +24,7 @@ function validateInput(event: Event, url: string) {
             invalidUrlErrorVisible.value = false;
         }, 3000);
     }
-    inputValue.value = "";
 }
-
-const inputValue = ref("");
 
 const statusMap = new Map<number, string>([
     [200, "success"],
@@ -40,36 +35,27 @@ const statusMap = new Map<number, string>([
 ]);
 
 // UI display state
+const inputValue = ref("");
+const invalidUrlErrorVisible = ref(false);
 const statusSuccess = ref(false);
+const statusVisible = ref(false);
+const statusCode = ref<number>();
 const responseContents = ref<PostResponse>();
+const responseMessage = ref("");
 
 async function POST_shortcode(event: Event) {
-    event?.preventDefault();
+    event.preventDefault();
     let [data, status, message] = await postURL("/shorten", inputValue.value);
     console.log(data);
-    POST.responseContainer.classList.remove("visible");
-
+    responseMessage.value = message;
+    statusCode.value = status;
     if (statusMap.get(status) === "error") {
         statusSuccess.value = false;
-
-        POST.statusLabel.textContent = `${status}`;
-        POST.statusMessage.textContent = /** @type {string} */ message;
-        POST.statusMessage.classList.remove("hide");
-        POST.statusResponse.classList.add("visible");
     } else {
-        data = data as PostResponse;
-        for (let i = 0; i < Object.keys(data).length; i++) {
-            POST.responseItemSpans[i].textContent =
-                /** @type {string} */ data[`${POST.responseItemSpans[i].id}`];
-        }
-        POST.statusLabel.classList.add(
-            /** @type {string} */ statusMap.get(status),
-        );
-        POST.statusLabel.textContent = `${status}`;
-        POST.statusMessage.textContent = /** @type {string} */ message;
-        POST.statusResponse.classList.add("visible");
-        POST.responseContainer.classList.add("visible");
+        responseContents.value = data as PostResponse;
+        statusSuccess.value = true;
     }
+    statusVisible.value = true;
 
     inputValue.value = "";
 }
@@ -77,14 +63,8 @@ async function POST_shortcode(event: Event) {
 
 <template>
     <h2>{{ props.title }}</h2>
-    <form :method>
-        <input
-            v-model="inputValue"
-            @submit="POST_shortcode($event)"
-            type="text"
-            name="url"
-            :placeholder
-        />
+    <form @submit="POST_shortcode($event)" :method>
+        <input v-model="inputValue" type="text" name="url" :placeholder />
         <input
             @click="validateInput($event, inputValue)"
             type="submit"
@@ -95,42 +75,25 @@ async function POST_shortcode(event: Event) {
         Invalid URL.
     </p>
 
-    <code class="response-status">
+    <code class="response-status" :class="{ visible: statusVisible }">
         <p>
             Status:
             <span
                 class="status-code"
                 :class="[statusSuccess ? 'success' : 'error']"
-            ></span>
+                >{{ statusCode }}</span
+            >
         </p>
-        <p class="status-message hide"></p>
+        <p class="status-message">{{ responseMessage }}</p>
     </code>
-    <div class="response-contents">
+    <div class="response-contents" :class="{ visible: statusSuccess }">
         <code>
             { <br />
-            &nbsp;&nbsp;id:
-            <span class="response-item" id="id">{{ responseContents.id }}</span>
-            <br />
-            &nbsp;&nbsp;url:
-            <span class="response-item" id="url">{{
-                responseContents.url
-            }}</span>
-            <br />
-            &nbsp;&nbsp;shortcode:
-            <span class="response-item" id="shortcode">{{
-                responseContents.shortcode
-            }}</span>
-            <br />
-            &nbsp;&nbsp;createdAt:
-            <span class="response-item" id="createdAt">{{
-                responseContents.createdAt
-            }}</span>
-            <br />
-            &nbsp;&nbsp;updatedAt:
-            <span class="response-item" id="updatedAt">{{
-                responseContents.updatedAt
-            }}</span>
-            <br />
+            <div v-for="(value, key) of responseContents">
+                &nbsp;&nbsp;{{ key }}:
+                <span class="response-item">{{ value }} </span>
+                <br />
+            </div>
             }
         </code>
     </div>
