@@ -1,0 +1,72 @@
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
+:root {
+    --green: #1aff89;
+    --red: #fa5959;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui;
+    color: #ffffff;
+    background-color: #1e1c1c;
+    padding-inline: 2.5em;
+}
+
+h1 {
+    font-size: 2.6rem;
+    width: fit-content;
+    padding-bottom: 0.25em;
+}
+
+a {
+    color: var(--green);
+}
+
+.action-tabs {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.action-tabs button {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 500;
+    padding: 0.8em 1em;
+    border: transparent;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+}
+
+.action-tabs button.selected {
+    color: var(--green);
+    &::after {
+        --size: 9px;
+        position: absolute;
+        content: "";
+        min-height: var(--size);
+        width: var(--size);
+        border-radius: 50%;
+        background-color: var(--green);
+        bottom: -10px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.action-wrapper {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    border-top: dashed 3px #454545;
+}

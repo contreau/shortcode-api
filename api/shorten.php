@@ -1,4 +1,5 @@
 <?php
+require "database/Database.php";
 require "database/functions.php";
 $config = require "database/config.php";
 $db = new Database(
