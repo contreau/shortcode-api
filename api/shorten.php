@@ -15,8 +15,7 @@ function POST_shortcode($db)
 
     // check for existing record
     if (recordExists($db, "url", $url)) {
-        sendErrorCode(400);
-        return [null, null];
+        return ["shortcode" => null];
     } else {
         // create record in database
         $db->query(
@@ -87,6 +86,10 @@ switch ($method) {
             http_response_code(201);
             header("Content-Type: application/json; charset=utf-8");
             echo json_encode($data);
+        } else {
+            http_response_code(400);
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode("A shortcode for this URL already exists.");
         }
         break;
 }

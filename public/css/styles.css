@@ -122,6 +122,15 @@ span.response-item {
     color: var(--green);
 }
 
+code.response-status {
+    opacity: 0;
+    transition: opacity 0.2s;
+
+    &.visible {
+        opacity: 1;
+    }
+}
+
 span.status-code {
     padding: 0.2em 0.4em;
     color: #000000;

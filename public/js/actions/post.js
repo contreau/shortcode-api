@@ -2,7 +2,7 @@
 
 // ** POST ACTION
 /** @param {string} endpoint @param {string} url
- * @returns {Promise<[PostResponse, number]>}
+ * @returns {Promise<[PostResponse | null, number, string]>}
  */
 export async function postURL(endpoint, url) {
   const response = await fetch(endpoint, {
@@ -10,9 +10,20 @@ export async function postURL(endpoint, url) {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `url=${encodeURIComponent(url)}`,
   });
+
+  const statusMessages = new Map([
+    [200, "Retrieved shortcode."],
+    [201, "Created shortcode."],
+    [204, "Deleted shortcode."],
+    [400, "A shortcode for this URL already exists."],
+    [404, "Shortcode not found."],
+    [500, "error"],
+  ]);
+
   const status = response.status;
   const data = await response.json();
-  return [data, status];
+  const message = /** @type {string} */ (statusMessages.get(status));
+  return [data, status, message];
 }
 
 // ** ELEMENT VARIABLES
@@ -31,6 +42,14 @@ export const shortcodeSubmitButton = /** @type {HTMLButtonElement} */ (
   document.querySelector('form[method="post"] input[type="submit"]')
 );
 
-export const statusCodeSpan = /** @type {HTMLSpanElement } */ (
+export const statusResponse = /** @type {Element} */ (
+  document.querySelector("code.response-status")
+);
+
+export const statusLabel = /** @type {HTMLSpanElement } */ (
   document.querySelector("span.status-code")
+);
+
+export const statusMessage = /** @type {HTMLParagraphElement} */ (
+  document.querySelector("p.status-message")
 );
