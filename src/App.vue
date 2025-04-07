@@ -69,6 +69,7 @@ function toggleVisibility(event: Event) {
             :title="'Create a Shortcode'"
             :method="'post'"
             :placeholder="'Enter a URL'"
+            :action="'create'"
         />
     </section>
 
@@ -77,6 +78,7 @@ function toggleVisibility(event: Event) {
             :title="'Retrieve a Full URL'"
             :method="'get'"
             :placeholder="'Enter a Shortcode'"
+            :action="'retrieve'"
         />
     </section>
 
@@ -85,6 +87,7 @@ function toggleVisibility(event: Event) {
             :title="'Update a Shortcode'"
             :method="'put'"
             :placeholder="'Enter a Shortcode'"
+            :action="'update'"
         />
     </section>
 
@@ -93,6 +96,7 @@ function toggleVisibility(event: Event) {
             :title="'Delete a Shortcode'"
             :method="'delete'"
             :placeholder="'Enter a Shortcode'"
+            :action="'delete'"
         />
     </section>
 
@@ -101,6 +105,7 @@ function toggleVisibility(event: Event) {
             :title="'Get Statistics for a Shortcode'"
             :method="'get'"
             :placeholder="'Enter a Shortcode'"
+            :action="'stats'"
         />
     </section>
 </template>

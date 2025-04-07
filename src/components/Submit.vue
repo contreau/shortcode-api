@@ -9,6 +9,7 @@ const props = defineProps<{
     title: string;
     method: string;
     placeholder: string;
+    action: string;
 }>();
 
 const statusMap = new Map<number, string>([
@@ -24,7 +25,7 @@ const statusMap = new Map<number, string>([
 // UI rendering shouldn't have to be changed
 // * Consider: action functions could also just be one function with optional parameters
 
-async function callDatabase(event: Event, method: string) {
+async function callDatabase(event: Event, method: string, action: string) {
     const methodToFunction: Record<string, Function> = {
         post: postURL,
         get: getURL,
@@ -32,6 +33,7 @@ async function callDatabase(event: Event, method: string) {
     event.preventDefault();
     let [data, status, message] = await methodToFunction[method](
         UI_state.inputValue,
+        action,
     );
     console.log(data);
     UI_state.responseMessage = message;
@@ -50,7 +52,7 @@ async function callDatabase(event: Event, method: string) {
 
 <template>
     <h2>{{ props.title }}</h2>
-    <form @submit="callDatabase($event, props.method)" :method>
+    <form @submit="callDatabase($event, props.method, props.action)" :method>
         <input
             v-model="UI_state.inputValue"
             type="text"
