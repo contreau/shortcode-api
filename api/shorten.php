@@ -16,7 +16,9 @@ function POST_shortcode($db)
 
     // check for existing record
     if (recordExists($db, "url", $url)) {
-        return ["shortcode" => null];
+        http_response_code(400);
+        header("Content-Type: application/json; charset=utf-8");
+        echo json_encode("A shortcode for this URL already exists.");
     } else {
         // create record in database
         $db->query(
@@ -35,17 +37,20 @@ function POST_shortcode($db)
             )
             ->fetch();
 
-        return [
+        $data = [
             "id" => $db_response["id"],
             "url" => $url,
             "shortcode" => $shortcode,
             "createdAt" => $db_response["createdAt"],
             "updatedAt" => $db_response["updatedAt"],
         ];
+        http_response_code(201);
+        header("Content-Type: application/json; charset=utf-8");
+        echo json_encode($data);
     }
 }
 
-function GET_urlData($db, $shortcode)
+function GET_urlData($db, string $shortcode)
 {
     // query for record in database
     if (recordExists($db, "shortcode", $shortcode)) {
@@ -62,43 +67,35 @@ function GET_urlData($db, $shortcode)
             "update url_information set accessCount = accessCount + 1 where shortcode = :shortcode",
             [":shortcode" => $shortcode]
         );
-        return [
+        $data = [
             "id" => $db_response["id"],
             "url" => $db_response["url"],
             "shortcode" => $shortcode,
             "createdAt" => $db_response["createdAt"],
             "updatedAt" => $db_response["updatedAt"],
         ];
+        http_response_code(200);
+        echo json_encode($data);
     } else {
-        return null;
+        http_response_code(404);
+        header("Content-Type: application/json; charset=utf-8");
+        echo json_encode("No URL found for this shortcode.");
     }
 }
 
-// ** Configure actions
+function GET_accessStats($db, string $action) {}
 
+// ** Function Delegation
 $method = $_SERVER["REQUEST_METHOD"];
 switch ($method) {
     case "GET":
-        $data = GET_urlData($db, $shortcode); // shortcode is passed in from index.php
-        if ($data != null) {
-            http_response_code(200);
-            echo json_encode($data);
+        if ($action === "stats") {
+            GET_accessStats($db, $action);
         } else {
-            http_response_code(404);
-            header("Content-Type: application/json; charset=utf-8");
-            echo json_encode("No URL found for this shortcode.");
+            GET_urlData($db, $shortcode); // shortcode is passed in from index.php
         }
         break;
     case "POST":
-        $data = POST_shortcode($db);
-        if ($data["shortcode"] != null) {
-            http_response_code(201);
-            header("Content-Type: application/json; charset=utf-8");
-            echo json_encode($data);
-        } else {
-            http_response_code(400);
-            header("Content-Type: application/json; charset=utf-8");
-            echo json_encode("A shortcode for this URL already exists.");
-        }
+        POST_shortcode($db);
         break;
 }

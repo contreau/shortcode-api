@@ -20,10 +20,13 @@ switch ($pathSize) {
         break;
     case 2:
         // route to api to handle GET, PUT, and DELETE for /shorten/code
+        $action = "";
         $shortcode = $last_path;
         require "api/shorten.php";
         break;
     case 3:
         // route to api to handle GET for /shorten/code/stats
+        $action = "stats";
+        require "api/shorten.php";
         break;
 }
