@@ -3,7 +3,7 @@
 $uri = parse_url($_SERVER["REQUEST_URI"])["path"];
 
 // break down uri components
-$uri_components = $uri_components = explode("/", trim($uri, "/"));
+$uri_components = explode("/", trim($uri, "/"));
 
 // get the amount of paths (/foo/bar = pathSize of 2)
 $pathSize = count($uri_components);
@@ -19,9 +19,9 @@ switch ($pathSize) {
         }
         break;
     case 2:
-        // route to api to handle GET, POST, PUT, and DELETE for /shorten/code
-        $endpoint = $uri_components[0];
-        require "api/{$endpoint}.php";
+        // route to api to handle GET, PUT, and DELETE for /shorten/code
+        $shortcode = $last_path;
+        require "api/shorten.php";
         break;
     case 3:
         // route to api to handle GET for /shorten/code/stats

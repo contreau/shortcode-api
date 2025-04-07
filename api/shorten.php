@@ -45,14 +45,13 @@ function POST_shortcode($db)
     }
 }
 
-function GET_longurl($db)
+function GET_urlData($db, $shortcode)
 {
-    $shortcode = $_GET["shortcode"];
     // query for record in database
     if (recordExists($db, "shortcode", $shortcode)) {
         $db_response = $db
             ->query(
-                "select url as url from url_information where shortcode = :shortcode",
+                "select id, url, createdAt, updatedAt from url_information where shortcode = :shortcode",
                 [
                     ":shortcode" => $shortcode,
                 ]
@@ -63,9 +62,14 @@ function GET_longurl($db)
             "update url_information set accessCount = accessCount + 1 where shortcode = :shortcode",
             [":shortcode" => $shortcode]
         );
-        return $db_response["url"];
+        return [
+            "id" => $db_response["id"],
+            "url" => $db_response["url"],
+            "shortcode" => $shortcode,
+            "createdAt" => $db_response["createdAt"],
+            "updatedAt" => $db_response["updatedAt"],
+        ];
     } else {
-        sendErrorCode(404);
         return null;
     }
 }
@@ -75,10 +79,14 @@ function GET_longurl($db)
 $method = $_SERVER["REQUEST_METHOD"];
 switch ($method) {
     case "GET":
-        $url = GET_longurl($db);
-        if ($url != null) {
+        $data = GET_urlData($db, $shortcode); // shortcode is passed in from index.php
+        if ($data != null) {
             http_response_code(200);
-            require "views/shorten.view.php";
+            echo json_encode($data);
+        } else {
+            http_response_code(404);
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode("No URL found for this shortcode.");
         }
         break;
     case "POST":
