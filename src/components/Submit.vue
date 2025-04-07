@@ -1,30 +1,15 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import type { PostResponse } from "../types.ts";
+import { UI_state } from "./store";
+import type { DatabaseResponse } from "../types.ts";
+import { validateUrlInput } from "../helpers.ts";
 import { postURL } from "../actions/post.ts";
+import { getURL } from "../actions/get.ts";
+
 const props = defineProps<{
     title: string;
     method: string;
     placeholder: string;
 }>();
-
-function validateInput(event: Event, url: string) {
-    const isValidURL = (url: string) => {
-        try {
-            new URL(url);
-            return true;
-        } catch (e) {
-            return false;
-        }
-    };
-    if (!isValidURL(url)) {
-        event.preventDefault();
-        invalidUrlErrorVisible.value = true;
-        setTimeout(() => {
-            invalidUrlErrorVisible.value = false;
-        }, 3000);
-    }
-}
 
 const statusMap = new Map<number, string>([
     [200, "success"],
@@ -34,62 +19,72 @@ const statusMap = new Map<number, string>([
     [404, "error"],
 ]);
 
-// UI display state
-const inputValue = ref("");
-const invalidUrlErrorVisible = ref(false);
-const statusSuccess = ref(false);
-const statusVisible = ref(false);
-const statusCode = ref<number>();
-const responseContents = ref<PostResponse>();
-const responseMessage = ref("");
+// * TODO: continue rework this function to be a general wrapper for all HTTP verb actions, since they all
+// return the same object; use the method prop to map to the appropriate imported function
+// UI rendering shouldn't have to be changed
+// * Consider: action functions could also just be one function with optional parameters
 
-async function POST_shortcode(event: Event) {
+async function callDatabase(event: Event, method: string) {
+    const methodToFunction: Record<string, Function> = {
+        post: postURL,
+        get: getURL,
+    };
     event.preventDefault();
-    let [data, status, message] = await postURL("/shorten", inputValue.value);
+    let [data, status, message] = await methodToFunction[method](
+        UI_state.inputValue,
+    );
     console.log(data);
-    responseMessage.value = message;
-    statusCode.value = status;
+    UI_state.responseMessage = message;
+    UI_state.statusCode = status;
     if (statusMap.get(status) === "error") {
-        statusSuccess.value = false;
+        UI_state.statusSuccess = false;
     } else {
-        responseContents.value = data as PostResponse;
-        statusSuccess.value = true;
+        UI_state.responseContents = data as DatabaseResponse;
+        UI_state.statusSuccess = true;
     }
-    statusVisible.value = true;
+    UI_state.statusVisible = true;
 
-    inputValue.value = "";
+    UI_state.inputValue = "";
 }
 </script>
 
 <template>
     <h2>{{ props.title }}</h2>
-    <form @submit="POST_shortcode($event)" :method>
-        <input v-model="inputValue" type="text" name="url" :placeholder />
+    <form @submit="callDatabase($event, props.method)" :method>
         <input
-            @click="validateInput($event, inputValue)"
+            v-model="UI_state.inputValue"
+            type="text"
+            name="url"
+            :placeholder
+        />
+        <input
+            @click="validateUrlInput($event, props.method, UI_state.inputValue)"
             type="submit"
             value="Submit"
         />
     </form>
-    <p class="invalid-url-message" :class="{ visible: invalidUrlErrorVisible }">
+    <p
+        class="invalid-url-message"
+        :class="{ visible: UI_state.invalidUrlErrorVisible }"
+    >
         Invalid URL.
     </p>
 
-    <code class="response-status" :class="{ visible: statusVisible }">
+    <code class="response-status" :class="{ visible: UI_state.statusVisible }">
         <p>
             Status:
             <span
                 class="status-code"
-                :class="[statusSuccess ? 'success' : 'error']"
-                >{{ statusCode }}</span
+                :class="[UI_state.statusSuccess ? 'success' : 'error']"
+                >{{ UI_state.statusCode }}</span
             >
         </p>
-        <p class="status-message">{{ responseMessage }}</p>
+        <p class="status-message">{{ UI_state.responseMessage }}</p>
     </code>
-    <div class="response-contents" :class="{ visible: statusSuccess }">
+    <div class="response-contents" :class="{ visible: UI_state.statusSuccess }">
         <code>
             { <br />
-            <div v-for="(value, key) of responseContents">
+            <div v-for="(value, key) of UI_state.responseContents">
                 &nbsp;&nbsp;{{ key }}:
                 <span class="response-item">{{ value }} </span>
                 <br />
