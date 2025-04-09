@@ -27,6 +27,7 @@ switch ($pathSize) {
     case 3:
         // route to api to handle GET for /shorten/code/stats
         $action = "stats";
+        $shortcode = $uri_components[$pathSize - 2];
         require "api/shorten.php";
         break;
 }

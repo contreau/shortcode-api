@@ -1,11 +1,11 @@
 import type { DatabaseResponse } from "../types.ts";
-import { statusMessages } from "../helpers.ts";
 
 export async function getURL(
   shortcode: string,
   action: string,
 ): Promise<[DatabaseResponse, number, string]> {
   let path = "";
+  let message = "";
   if (action === "retrieve") {
     path = `/shorten/${shortcode}`;
   } else if (action === "stats") {
@@ -15,7 +15,13 @@ export async function getURL(
     method: "GET",
   });
   const status = response.status;
+  if (status === 404) {
+    message = "No URL found for this shortcode.";
+  } else if (status === 200 && action === "stats") {
+    message = "Access statistics retrieved for the provided shortcode.";
+  } else {
+    message = "Retrieved URL.";
+  }
   const data = await response.json();
-  const message = statusMessages.get(status) as string;
   return [data, status, message];
 }
