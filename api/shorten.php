@@ -117,6 +117,21 @@ function GET_accessStats($db, string $shortcode)
     }
 }
 
+function DELETE_url($db, string $shortcode)
+{
+    // query for record in database
+    if (recordExists($db, "shortcode", $shortcode)) {
+        $db->query("delete from url_information where shortcode = :shortcode", [
+            ":shortcode" => $shortcode,
+        ]);
+        http_response_code(204);
+    } else {
+        http_response_code(404);
+        header("Content-Type: application/json; charset=utf-8");
+        echo json_encode("No URL found for this shortcode.");
+    }
+}
+
 // ** Function Delegation
 $method = $_SERVER["REQUEST_METHOD"];
 switch ($method) {
@@ -129,5 +144,8 @@ switch ($method) {
         break;
     case "POST":
         POST_shortcode($db);
+        break;
+    case "DELETE":
+        DELETE_url($db, $shortcode);
         break;
 }

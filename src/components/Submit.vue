@@ -4,6 +4,7 @@ import type { DatabaseResponse } from "../types.ts";
 import { validateUrlInput } from "../helpers.ts";
 import { postURL } from "../actions/post.ts";
 import { getURL } from "../actions/get.ts";
+import { deleteURL } from "../actions/delete";
 
 const props = defineProps<{
     title: string;
@@ -29,22 +30,32 @@ async function callDatabase(event: Event, method: string, action: string) {
     const methodToFunction: Record<string, Function> = {
         post: postURL,
         get: getURL,
+        delete: deleteURL,
     };
     event.preventDefault();
-    let [data, status, message] = await methodToFunction[method](
-        UI_state.inputValue,
-        action,
-    );
-    console.log(data);
-    UI_state.responseMessage = message;
-    UI_state.statusCode = status;
-    if (statusMap.get(status) === "error") {
-        UI_state.statusSuccess = false;
+    if (method === "delete") {
+        const [status, message] = await deleteURL(UI_state.inputValue);
+        console.log(message);
+        UI_state.statusCode = status;
+        UI_state.responseMessage = message;
+        UI_state.statusSuccess = true ? status === 204 : false;
+        UI_state.statusVisible = true;
     } else {
-        UI_state.responseContents = data as DatabaseResponse;
-        UI_state.statusSuccess = true;
+        let [data, status, message] = await methodToFunction[method](
+            UI_state.inputValue,
+            action,
+        );
+        console.log(data);
+        UI_state.responseMessage = message;
+        UI_state.statusCode = status;
+        if (statusMap.get(status) === "error") {
+            UI_state.statusSuccess = false;
+        } else {
+            UI_state.responseContents = data as DatabaseResponse;
+            UI_state.statusSuccess = true;
+        }
+        UI_state.statusVisible = true;
     }
-    UI_state.statusVisible = true;
 
     UI_state.inputValue = "";
 }
@@ -83,7 +94,12 @@ async function callDatabase(event: Event, method: string, action: string) {
         </p>
         <p class="status-message">{{ UI_state.responseMessage }}</p>
     </code>
-    <div class="response-contents" :class="{ visible: UI_state.statusSuccess }">
+    <div
+        class="response-contents"
+        :class="{
+            visible: UI_state.statusSuccess && props.method !== 'delete',
+        }"
+    >
         <code>
             { <br />
             <div v-for="(value, key) of UI_state.responseContents">
