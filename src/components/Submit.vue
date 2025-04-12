@@ -21,11 +21,6 @@ const statusMap = new Map<number, string>([
     [404, "error"],
 ]);
 
-// * TODO: continue rework this function to be a general wrapper for all HTTP verb actions, since they all
-// return the same object; use the method prop to map to the appropriate imported function
-// UI rendering shouldn't have to be changed
-// * Consider: action functions could also just be one function with optional parameters
-
 async function callDatabase(event: Event, method: string, action: string) {
     const methodToFunction: Record<string, Function> = {
         post: postURL,
@@ -114,7 +109,8 @@ async function callDatabase(event: Event, method: string, action: string) {
 
 <style scoped>
 h2 {
-    font-size: 1.7rem;
+    font-size: 1.45rem;
+    font-weight: 500;
 }
 
 input[type="text"] {
@@ -156,7 +152,7 @@ input[type="submit"] {
 }
 
 code {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
 }
 
 span.response-item {
